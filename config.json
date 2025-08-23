@@ -1,0 +1,8 @@
+{
+    "logging": {
+        "level": "INFO",
+        "file_path": "logs/scraper.log",
+        "console_output": true,
+        "max_file_size_mb": 10
+    }
+}

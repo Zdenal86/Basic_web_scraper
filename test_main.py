@@ -5,7 +5,7 @@ import os
 import logging
 import requests
 from unittest.mock import patch, Mock, MagicMock
-from main import WebScraper
+from src import WebScraper
 
 
 class TestWebScraper:
@@ -55,7 +55,7 @@ class TestWebScraper:
         """Test that logger level is set to INFO"""
         assert self.scraper.logger.level == logging.INFO
 
-    @patch('main.requests.get')
+    @patch('scr.scraper.requests.get')
     def test_check_website_success(self, mock_get):
         """Test successful website checking"""
         # Mock successful response
@@ -72,7 +72,7 @@ class TestWebScraper:
         mock_get.assert_called_once_with(self.test_url)
         mock_response.raise_for_status.assert_called_once()
 
-    @patch('main.requests.get')
+    @patch('scr.scraper.requests.get')
     def test_check_website_no_title(self, mock_get):
         """Test website with no title"""
         # Mock response without title
@@ -88,7 +88,7 @@ class TestWebScraper:
         assert result is None
         mock_get.assert_called_once_with(self.test_url)
 
-    @patch('main.requests.get')
+    @patch('scr.scraper.requests.get')
     def test_check_website_request_exception(self, mock_get):
         """Test handling of request exceptions"""
         # Mock request exception
