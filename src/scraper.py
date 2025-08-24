@@ -2,64 +2,77 @@
 
 import requests
 from bs4 import BeautifulSoup
-
-import logging
-from datetime import datetime
-import os
+import time
 from typing import Optional
 
-from .config import Config
+try:
+    from .config import Config  # For relative import within package
+    from .logger import ScraperLogger
+except ImportError:
+    from config import Config   # Fallback for direct execution
+    from logger import ScraperLogger
 
 class WebScraper:
     def __init__(self, url: str, config_file: Optional[str] = None):
         self.url = url
         self.config = Config(config_file)
-        self.setup_logging()
 
-    def setup_logging(self):
-        """Setup logging to file using configuration"""
-        # Load configuration values
-        log_file = self.config.get('logging', 'file_path', 'logs/scraper.log')
-        log_level = self.config.get('logging', 'level', 'INFO')
-        console_output = self.config.get('logging', 'console_output', True)
-
-        # Create logs directory
-        os.makedirs(os.path.dirname(log_file), exist_ok=True)
-
-        # Create custom logger for this instance
-        self.logger = logging.getLogger(f"{__name__}_{id(self)}")
-        self.logger.setLevel(getattr(logging, log_level))
-
-        # Check if handler already exists (to avoid duplicates)
-        if not self.logger.handlers:
-            # File handler - logging to file
-            file_handler = logging.FileHandler(log_file, encoding='utf-8')
-            file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            file_handler.setFormatter(file_formatter)
-
-            # Add file handler
-            self.logger.addHandler(file_handler)
-
-            # Console handler - only if enabled in config
-            if console_output:
-                console_handler = logging.StreamHandler()
-                console_formatter = logging.Formatter('%(levelname)s - %(message)s')
-                console_handler.setFormatter(console_formatter)
-                self.logger.addHandler(console_handler)
+        # Setup logger using the new ScraperLogger class
+        logger_manager = ScraperLogger(f"{__name__}_{id(self)}", self.config)
+        self.logger = logger_manager.get_logger()
 
     def check_website(self):
+        """Check website with retry logic and configurable timeout"""
+        timeout = self.config.get('scraping', 'timeout', 10)
+        max_retries = self.config.get('scraping', 'max_retries', 3)
+        retry_delay = self.config.get('scraping', 'retry_delay', 1)
+
         self.logger.info(f"Starting scraping for URL: {self.url}")
-        try:
-            response = requests.get(self.url)
-            response.raise_for_status()  # Raise an error for HTTP errors
-            soup = BeautifulSoup(response.text, 'html.parser')
-            # Perform your scraping logic here
-            if soup.title and soup.title.string:
-                self.logger.info(f"Website title found: {soup.title.string}")
-                return soup.title.string  # Example: return the website title
-            else:
-                self.logger.warning("No title found on the page")
-                return None
-        except requests.RequestException as e:
-            self.logger.error(f"Error checking website: {e}")
-            return None
+
+        for attempt in range(max_retries):
+            try:
+                self.logger.debug(f"Attempt {attempt + 1}/{max_retries}")
+
+                response = requests.get(self.url, timeout=timeout)
+                response.raise_for_status()  # Raise an error for HTTP errors
+
+                soup = BeautifulSoup(response.text, 'html.parser')
+
+                # Perform scraping logic here
+                if soup.title and soup.title.string:
+                    title = soup.title.string.strip()
+                    self.logger.info(f"Website title found: {title}")
+                    return title
+                else:
+                    self.logger.warning("No title found on the page")
+                    return None
+
+            except requests.Timeout:
+                self.logger.warning(f"Timeout on attempt {attempt + 1}")
+            except requests.ConnectionError:
+                self.logger.warning(f"Connection error on attempt {attempt + 1}")
+            except requests.HTTPError as e:
+                self.logger.warning(f"HTTP error on attempt {attempt + 1}: {e}")
+            except requests.RequestException as e:
+                self.logger.warning(f"Request error on attempt {attempt + 1}: {e}")
+
+            # Wait before next attempt (if not the last attempt)
+            if attempt < max_retries - 1:
+                self.logger.info(f"Retrying in {retry_delay} seconds...")
+                import time
+                time.sleep(retry_delay)
+
+        # All attempts failed
+        self.logger.error(f"Failed to scrape after {max_retries} attempts")
+        return None
+
+if __name__ == "__main__":
+    scraper = WebScraper("https://example.com")
+    title = scraper.check_website()
+    testconfig = Config()
+    print(testconfig.get('loging', 'file_path'))
+    print(testconfig.get_section('logging'))
+    if title:
+        print(f"Website title is: {title}")
+    else:
+        print("Failed to retrieve website title.")

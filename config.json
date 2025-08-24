@@ -2,7 +2,16 @@
     "logging": {
         "level": "INFO",
         "file_path": "logs/scraper.log",
+        "max_file_size_mb": 10,
         "console_output": true,
-        "max_file_size_mb": 10
+        "console_log_format": "%(levelname)s - %(message)s",
+        "file_log_format": "%(asctime)s - %(levelname)s - %(message)s"
+    },
+
+    "scraping": {
+        "timeout": 10,
+        "max_retries": 3,
+        "retry_delay": 1,
+        "user_agent": "Mozilla/5.0 (compatible; BasicScraper/1.0)"
     }
 }
