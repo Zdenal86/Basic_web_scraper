@@ -56,8 +56,12 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
+# *.log  # Commented out - we want to keep specific log patterns below
 local_settings.py
+
+# Logs - ignore actual log files but keep directory structure
+logs/*.log
+!logs/.gitkeep
 db.sqlite3
 db.sqlite3-journal
 

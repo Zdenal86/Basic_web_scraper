@@ -1,0 +1,14 @@
+{
+    "scraping": {
+        "timeout": 5,
+        "max_retries": 2,
+        "retry_delay": 0.1
+    },
+    "logging": {
+        "level": "DEBUG",
+        "console_output": true,
+        "file_path": "logs/test_scraper.log",
+        "console_log_format": "%(levelname)s - %(message)s",
+        "file_log_format": "%(asctime)s - %(levelname)s - %(message)s"
+    }
+}

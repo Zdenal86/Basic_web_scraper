@@ -19,34 +19,17 @@ class TestWebScraper:
     def setup_method(self):
         """Setup before each test"""
         self.test_url = "https://example.com"
-        self.scraper = WebScraper(self.test_url)
+        # Use test configuration file
+        test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
+        self.scraper = WebScraper(self.test_url, config_file=test_config_path)
 
-    def teardown_method(self):
-        """Cleanup after each test"""
-        # Remove test log files if they exist
-        if os.path.exists('logs/scraper.log'):
-            try:
-                os.remove('logs/scraper.log')
-            except:
-                pass
-
-    def _setup_test_config(self, monkeypatch, timeout=5, max_retries=1, retry_delay=0.1):
-        """Helper method to setup predictable test configuration"""
-        def mock_config_get(section, key, default):
-            config_map = {
-                ('scraping', 'timeout'): timeout,
-                ('scraping', 'max_retries'): max_retries,
-                ('scraping', 'retry_delay'): retry_delay,
-                ('logging', 'level'): 'INFO',
-                ('logging', 'console_output'): True,
-                ('logging', 'file_path'): 'logs/scraper.log',
-                ('logging', 'console_log_format'): '%(levelname)s - %(message)s',
-                ('logging', 'file_log_format'): '%(asctime)s - %(levelname)s - %(message)s'
-            }
-            return config_map.get((section, key), default)
-
-        monkeypatch.setattr(self.scraper.config, 'get', mock_config_get)
-        return timeout, max_retries, retry_delay
+    def _get_test_config_values(self):
+        """Helper to get expected test config values - simple and clear"""
+        return {
+            'timeout': 5,
+            'max_retries': 2,
+            'retry_delay': 0.1
+        }
 
     def test_webscraper_initialization(self):
         """Test WebScraper initialization"""
@@ -64,13 +47,13 @@ class TestWebScraper:
         assert 'FileHandler' in handler_types
         assert 'StreamHandler' in handler_types
 
-    def test_logger_level_is_info(self):
-        """Test that logger level is set to INFO"""
-        assert self.scraper.logger.level == logging.INFO
+    def test_logger_level_is_debug(self):
+        """Test that logger level is set to DEBUG from test config"""
+        assert self.scraper.logger.level == logging.DEBUG
 
-    def test_check_website_success(self, monkeypatch):
+    def test_check_website_success(self):
         """Test successful website checking"""
-        timeout, max_retries, retry_delay = self._setup_test_config(monkeypatch)
+        config_values = self._get_test_config_values()
 
         with patch('src.scraper.requests.get') as mock_get:
             # Mock successful response
@@ -84,12 +67,12 @@ class TestWebScraper:
 
             # Assertions
             assert result == "Test Title"
-            mock_get.assert_called_once_with(self.test_url, timeout=timeout)
+            mock_get.assert_called_once_with(self.test_url, timeout=config_values['timeout'])
             mock_response.raise_for_status.assert_called_once()
 
-    def test_check_website_no_title(self, monkeypatch):
+    def test_check_website_no_title(self):
         """Test website with no title"""
-        timeout, max_retries, retry_delay = self._setup_test_config(monkeypatch)
+        config_values = self._get_test_config_values()
 
         with patch('src.scraper.requests.get') as mock_get:
             # Mock response without title
@@ -103,11 +86,11 @@ class TestWebScraper:
 
             # Assertions
             assert result is None
-            mock_get.assert_called_once_with(self.test_url, timeout=timeout)
+            mock_get.assert_called_once_with(self.test_url, timeout=config_values['timeout'])
 
-    def test_check_website_request_exception(self, monkeypatch):
+    def test_check_website_request_exception(self):
         """Test handling of request exceptions with retry logic"""
-        timeout, max_retries, retry_delay = self._setup_test_config(monkeypatch, max_retries=3)
+        config_values = self._get_test_config_values()
 
         with patch('src.scraper.requests.get') as mock_get, \
              patch('src.scraper.time.sleep') as mock_sleep:
@@ -120,12 +103,12 @@ class TestWebScraper:
 
             # Assertions
             assert result is None
-            assert mock_get.call_count == max_retries
-            assert mock_sleep.call_count == max_retries - 1  # Sleep called between retries
+            assert mock_get.call_count == config_values['max_retries']
+            assert mock_sleep.call_count == config_values['max_retries'] - 1  # Sleep called between retries
 
-    def test_retry_logic_with_eventual_success(self, monkeypatch):
+    def test_retry_logic_with_eventual_success(self):
         """Test that retry logic works when request succeeds on second attempt"""
-        timeout, max_retries, retry_delay = self._setup_test_config(monkeypatch, max_retries=3)
+        config_values = self._get_test_config_values()
 
         with patch('src.scraper.requests.get') as mock_get, \
              patch('src.scraper.time.sleep') as mock_sleep:
@@ -150,8 +133,9 @@ class TestWebScraper:
 
     def test_multiple_scrapers_have_different_loggers(self):
         """Test that multiple scrapers have unique loggers"""
-        scraper1 = WebScraper("https://site1.com")
-        scraper2 = WebScraper("https://site2.com")
+        test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
+        scraper1 = WebScraper("https://site1.com", config_file=test_config_path)
+        scraper2 = WebScraper("https://site2.com", config_file=test_config_path)
 
         # Logger names should be different
         assert scraper1.logger.name != scraper2.logger.name
