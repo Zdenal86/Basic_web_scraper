@@ -1,5 +1,8 @@
 # Web Scraper
 
+[![Tests](https://github.com/Zdenal86/Basic_web_scraper/workflows/Tests/badge.svg)](https://github.com/Zdenal86/Basic_web_scraper/actions)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+
 Professional web scraping tool with comprehensive logging, error handling, and configuration management.
 
 ## 🚀 Features
@@ -119,7 +122,13 @@ python -m pytest tests/test_scraper.py
 - **Error handling** - Comprehensive exception management
 - **Testing** - Mocked dependencies, isolated tests
 
-## 👨‍💻 Author
+## � Continuous Integration
+
+- **GitHub Actions** - Automated testing on every push/PR
+- **Multi-Python testing** - Tests run on Python 3.11, 3.12, and 3.13
+- **Quality assurance** - All 26 tests must pass before merge
+
+## �👨‍💻 Author
 
 Created as a demonstration of clean Python architecture and professional development practices.
 
