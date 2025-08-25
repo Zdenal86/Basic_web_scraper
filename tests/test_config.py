@@ -31,7 +31,7 @@ class TestConfig:
         # Use our test config file
         test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
         config = Config(test_config_path)
-        
+
         assert config is not None
         # Verify it loads test config values
         assert config.get('logging', 'level', 'INFO') == 'DEBUG'
@@ -48,7 +48,7 @@ class TestConfig:
         # Use test config to verify existing values
         test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
         config = Config(test_config_path)
-        
+
         # Test existing values from test_config.json
         assert config.get('logging', 'level', 'INFO') == 'DEBUG'
         assert config.get('scraping', 'max_retries', 1) == 2
@@ -58,14 +58,14 @@ class TestConfig:
         """Test get_section method functionality"""
         test_config_path = os.path.join(os.path.dirname(__file__), 'test_config.json')
         config = Config(test_config_path)
-        
+
         # Get entire logging section
         logging_section = config.get_section('logging')
         assert isinstance(logging_section, dict)
         assert 'level' in logging_section
         assert 'console_output' in logging_section
         assert logging_section['level'] == 'DEBUG'
-        
+
         # Test nonexistent section
         nonexistent = config.get_section('nonexistent_section')
         assert nonexistent == {}
@@ -73,10 +73,10 @@ class TestConfig:
     def test_update_method(self):
         """Test config update functionality"""
         original_value = self.config.get('test_section', 'test_key', 'original')
-        
+
         # Update config
         self.config.update('test_section', 'test_key', 'updated_value')
-        
+
         # Verify update
         updated_value = self.config.get('test_section', 'test_key', 'original')
         assert updated_value == 'updated_value'
@@ -87,12 +87,12 @@ class TestConfig:
             # Write invalid JSON
             tmp_file.write('{ invalid json content }')
             temp_path = tmp_file.name
-            
+
         try:
             # Should not raise exception, should fall back to defaults
             config = Config(temp_path)
             assert config is not None
-            
+
             # Should return defaults since JSON is invalid
             result = config.get('any_section', 'any_key', 'default')
             assert result == 'default'
@@ -106,11 +106,11 @@ class TestConfig:
     def test_load_config_with_missing_file(self):
         """Test loading config when file doesn't exist"""
         nonexistent_file = "/nonexistent/path/config.json"
-        
+
         # Should not raise exception, should fall back to defaults
         config = Config(nonexistent_file)
         assert config is not None
-        
+
         # Should return defaults since file doesn't exist
         result = config.get('any_section', 'any_key', 'default')
         assert result == 'default'
