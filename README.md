@@ -2,6 +2,7 @@
 
 [![Tests](https://github.com/Zdenal86/Basic_web_scraper/workflows/Tests/badge.svg)](https://github.com/Zdenal86/Basic_web_scraper/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Coverage](https://img.shields.io/badge/coverage-83%25-brightgreen.svg)](https://github.com/Zdenal86/Basic_web_scraper)
 
 Professional web scraping tool with comprehensive logging, error handling, and configuration management.
 
@@ -10,7 +11,7 @@ Professional web scraping tool with comprehensive logging, error handling, and c
 - **Configurable timeout and retry logic**
 - **Professional logging** (file + console output)
 - **JSON-based configuration**
-- **Comprehensive test suite** (26 tests)
+- **Comprehensive test suite** (26 tests with 83% coverage)
 - **Clean architecture** with separated concerns
 - **Error handling** for network issues
 
