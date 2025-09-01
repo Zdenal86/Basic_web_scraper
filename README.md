@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Zdenal86/Basic_web_scraper/workflows/Tests/badge.svg)](https://github.com/Zdenal86/Basic_web_scraper/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Coverage](https://img.shields.io/badge/coverage-83%25-brightgreen.svg)](https://github.com/Zdenal86/Basic_web_scraper)
+[![Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen.svg)](https://github.com/Zdenal86/Basic_web_scraper)
 
 Professional web scraping tool with comprehensive logging, error handling, and configuration management.
 
@@ -11,7 +11,7 @@ Professional web scraping tool with comprehensive logging, error handling, and c
 - **Configurable timeout and retry logic**
 - **Professional logging** (file + console output)
 - **JSON-based configuration**
-- **Comprehensive test suite** (26 tests with 83% coverage)
+- **Comprehensive test suite** (27 tests with 84% coverage)
 - **Clean architecture** with separated concerns
 - **Error handling** for network issues
 
@@ -50,27 +50,9 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## 🏃‍♂️ Usage
+## 💾 Configuration
 
-### Basic Usage
-
-```python
-from src import WebScraper
-
-scraper = WebScraper("https://example.com")
-title = scraper.check_website()
-print(f"Website title: {title}")
-```
-
-### Command Line
-
-```bash
-python main.py
-```
-
-## ⚙️ Configuration
-
-Edit `config.json` to customize behavior:
+Create `config.json` with your settings:
 
 ```json
 {
@@ -82,9 +64,26 @@ Edit `config.json` to customize behavior:
   "logging": {
     "level": "INFO",
     "console_output": true,
-    "file_path": "logs/scraper.log"
+    "file_path": "logs/scraper.log",
+    "console_log_format": "%(levelname)s - %(message)s",
+    "file_log_format": "%(asctime)s - %(levelname)s - %(message)s"
   }
 }
+```
+
+## 🎯 Usage
+
+```python
+from src import WebScraper
+
+# Basic usage
+scraper = WebScraper("https://example.com")
+title = scraper.check_website()
+print(f"Website title: {title}")
+
+# With custom config
+scraper = WebScraper("https://example.com", config_file="my_config.json")
+title = scraper.check_website()
 ```
 
 ## 🧪 Testing
@@ -92,6 +91,9 @@ Edit `config.json` to customize behavior:
 ```bash
 # Run all tests
 python -m pytest
+
+# Run with coverage
+python -m pytest --cov=src
 
 # Run with verbose output
 python -m pytest -v
@@ -102,7 +104,8 @@ python -m pytest tests/test_scraper.py
 
 ## 📊 Test Coverage
 
-- **26 comprehensive tests**
+- **27 comprehensive tests**
+- **84% code coverage**
 - Unit tests with mocking
 - Configuration isolation
 - Error handling validation
@@ -110,10 +113,11 @@ python -m pytest tests/test_scraper.py
 
 ## 🔧 Technologies Used
 
-- **Python 3.13+**
+- **Python 3.11+**
 - **requests** - HTTP library
 - **beautifulsoup4** - HTML parsing
 - **pytest** - Testing framework
+- **pytest-cov** - Coverage reporting
 - **JSON** - Configuration management
 
 ## 🏗️ Architecture
@@ -123,15 +127,23 @@ python -m pytest tests/test_scraper.py
 - **Error handling** - Comprehensive exception management
 - **Testing** - Mocked dependencies, isolated tests
 
-## � Continuous Integration
+## 🔄 Continuous Integration
 
 - **GitHub Actions** - Automated testing on every push/PR
 - **Multi-Python testing** - Tests run on Python 3.11, 3.12, and 3.13
-- **Quality assurance** - All 26 tests must pass before merge
+- **Quality assurance** - All 27 tests must pass before merge
 
-## �👨‍💻 Author
+## 👨‍💻 Author & AI Collaboration
 
-Created as a demonstration of clean Python architecture and professional development practices.
+This project was developed in collaboration with **GitHub Copilot AI assistant**. The AI helped with:
+
+- **Code architecture** and design patterns
+- **Test implementation** and comprehensive coverage
+- **Documentation** and best practices
+- **Code review** and optimization suggestions
+- **Professional Python** development standards
+
+The collaboration demonstrates effective **human-AI partnership** in software development, combining human creativity and problem-solving with AI's knowledge of best practices and code patterns.
 
 ## 📝 License
 

@@ -20,11 +20,11 @@ class ScraperLogger:
     def _setup_logger(self, name: str) -> logging.Logger:
         """Setup logging with configuration from config file"""
         # Load configuration values
-        log_file = self.config.get('logging', 'file_path', 'logs/scraper.log')
-        log_level = self.config.get('logging', 'level', 'INFO')
-        console_output = self.config.get('logging', 'console_output', True)
-        console_format = self.config.get('logging', 'console_log_format', '%(levelname)s - %(message)s')
-        file_format = self.config.get('logging', 'file_log_format', '%(asctime)s - %(levelname)s - %(message)s')
+        log_file = self.config.fetch_config_value('logging', 'file_path', 'logs/scraper.log')
+        log_level = self.config.fetch_config_value('logging', 'level', 'INFO')
+        console_output = self.config.fetch_config_value('logging', 'console_output', True)
+        console_format = self.config.fetch_config_value('logging', 'console_log_format', '%(levelname)s - %(message)s')
+        file_format = self.config.fetch_config_value('logging', 'file_log_format', '%(asctime)s - %(levelname)s - %(message)s')
 
         # Create logs directory
         os.makedirs(os.path.dirname(log_file), exist_ok=True)

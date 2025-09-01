@@ -55,7 +55,7 @@ class Config:
             }
         }
 
-    def get(self, section: str, key: str, default: Any = None) -> Any:
+    def fetch_config_value(self, section: str, key: str, default: Any = None) -> Any:
         """
         Get specific configuration value
 

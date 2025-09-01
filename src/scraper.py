@@ -23,9 +23,9 @@ class WebScraper:
 
     def check_website(self):
         """Check website with retry logic and configurable timeout"""
-        timeout = self.config.get('scraping', 'timeout', 10)
-        max_retries = self.config.get('scraping', 'max_retries', 3)
-        retry_delay = self.config.get('scraping', 'retry_delay', 1)
+        timeout = self.config.fetch_config_value('scraping', 'timeout', 10)
+        max_retries = self.config.fetch_config_value('scraping', 'max_retries', 3)
+        retry_delay = self.config.fetch_config_value('scraping', 'retry_delay', 1)
 
         self.logger.info(f"Starting scraping for URL: {self.url}")
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     scraper = WebScraper("https://example.com")
     title = scraper.check_website()
     testconfig = Config()
-    print(testconfig.get('loging', 'file_path'))
+    print(testconfig.fetch_config_value('loging', 'file_path'))
     print(testconfig.get_section('logging'))
     if title:
         print(f"Website title is: {title}")

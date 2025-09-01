@@ -2,7 +2,6 @@
 
 import pytest
 import os
-import json
 import tempfile
 from unittest.mock import patch, mock_open
 import sys
@@ -34,13 +33,13 @@ class TestConfig:
 
         assert config is not None
         # Verify it loads test config values
-        assert config.get('logging', 'level', 'INFO') == 'DEBUG'
-        assert config.get('scraping', 'timeout', 10) == 5
+        assert config.fetch_config_value('logging', 'level', 'INFO') == 'DEBUG'
+        assert config.fetch_config_value('scraping', 'timeout', 10) == 5
 
     def test_get_method_returns_default_when_key_missing(self):
         """Test that get method returns default value when key is missing"""
         default_value = "default_test_value"
-        result = self.config.get('nonexistent_section', 'nonexistent_key', default_value)
+        result = self.config.fetch_config_value('nonexistent_section', 'nonexistent_key', default_value)
         assert result == default_value
 
     def test_get_method_returns_config_value_when_exists(self):
@@ -50,9 +49,9 @@ class TestConfig:
         config = Config(test_config_path)
 
         # Test existing values from test_config.json
-        assert config.get('logging', 'level', 'INFO') == 'DEBUG'
-        assert config.get('scraping', 'max_retries', 1) == 2
-        assert config.get('logging', 'console_output', False) == True
+        assert config.fetch_config_value('logging', 'level', 'INFO') == 'DEBUG'
+        assert config.fetch_config_value('scraping', 'max_retries', 1) == 2
+        assert config.fetch_config_value('logging', 'console_output', False) == True
 
     def test_get_section_method(self):
         """Test get_section method functionality"""
@@ -72,13 +71,13 @@ class TestConfig:
 
     def test_update_method(self):
         """Test config update functionality"""
-        original_value = self.config.get('test_section', 'test_key', 'original')
+        original_value = self.config.fetch_config_value('test_section', 'test_key', 'original')
 
         # Update config
         self.config.update('test_section', 'test_key', 'updated_value')
 
         # Verify update
-        updated_value = self.config.get('test_section', 'test_key', 'original')
+        updated_value = self.config.fetch_config_value('test_section', 'test_key', 'original')
         assert updated_value == 'updated_value'
 
     def test_load_config_with_invalid_json(self):
@@ -94,7 +93,7 @@ class TestConfig:
             assert config is not None
 
             # Should return defaults since JSON is invalid
-            result = config.get('any_section', 'any_key', 'default')
+            result = config.fetch_config_value('any_section', 'any_key', 'default')
             assert result == 'default'
         finally:
             try:
@@ -112,7 +111,7 @@ class TestConfig:
         assert config is not None
 
         # Should return defaults since file doesn't exist
-        result = config.get('any_section', 'any_key', 'default')
+        result = config.fetch_config_value('any_section', 'any_key', 'default')
         assert result == 'default'
 
 
